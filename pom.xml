@@ -18,6 +18,8 @@
         <module>FlinkSubmitByShell</module>
         <module>JarManifestParserDemo</module>
         <module>Kafka2Kafka</module>
+        <module>FlinkNetty</module>
+        <module>FlinkAkka</module>
     </modules>
 
 
