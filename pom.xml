@@ -20,6 +20,7 @@
         <module>Kafka2Kafka</module>
         <module>FlinkNetty</module>
         <module>FlinkAkka</module>
+        <module>ContainerKill</module>
     </modules>
 
 
