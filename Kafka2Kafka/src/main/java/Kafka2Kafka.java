@@ -9,6 +9,8 @@ import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsIni
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.util.Collector;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 public class Kafka2Kafka {
@@ -21,7 +23,7 @@ public class Kafka2Kafka {
         ParameterTool parameterTool = ParameterTool.fromPropertiesFile(args[0]);
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.enableCheckpointing(60000, CheckpointingMode.EXACTLY_ONCE);
+        env.enableCheckpointing(parameterTool.getLong("env.checkpointing.timeMS"), CheckpointingMode.EXACTLY_ONCE);
 
         KafkaSource<String> source = KafkaSource.<String>builder()
                 .setBootstrapServers(parameterTool.get("source.brokers"))
@@ -43,7 +45,12 @@ public class Kafka2Kafka {
                 .build();
 
         DataStream<String> stream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "Kafka Source");
-        stream.sinkTo(sink);
+        stream.process(new ProcessFunction<String, String>() {
+            @Override
+            public void processElement(String s, ProcessFunction<String, String>.Context context, Collector<String> collector) throws Exception {
+                collector.collect(s);
+            }
+        }).sinkTo(sink);
 
         env.execute("Kafka2Kafka");
     }
