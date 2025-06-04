@@ -1,6 +1,7 @@
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.utils.ParameterTool;
+import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.elasticsearch.sink.Elasticsearch7SinkBuilder;
 import org.apache.flink.connector.elasticsearch.sink.ElasticsearchSink;
 import org.apache.flink.connector.kafka.source.KafkaSource;
@@ -58,6 +59,7 @@ public class Kafka2ES {
                 .setHosts(httpHosts)
                 .setEmitter((element, context, indexer) ->
                         indexer.add(createIndexRequest(parameterTool.getRequired("sink.es.index"), element)))
+                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                 .build();
 
 
