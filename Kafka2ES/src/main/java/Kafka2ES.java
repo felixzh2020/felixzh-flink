@@ -4,6 +4,7 @@ import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.connector.base.DeliveryGuarantee;
 import org.apache.flink.connector.elasticsearch.sink.Elasticsearch7SinkBuilder;
 import org.apache.flink.connector.elasticsearch.sink.ElasticsearchSink;
+import org.apache.flink.connector.elasticsearch.sink.FlushBackoffType;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.CheckpointingMode;
@@ -60,6 +61,10 @@ public class Kafka2ES {
                 .setEmitter((element, context, indexer) ->
                         indexer.add(createIndexRequest(parameterTool.getRequired("sink.es.index"), element)))
                 .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                .setBulkFlushBackoffStrategy(FlushBackoffType.CONSTANT, 3, 500)
+                .setConnectionTimeout(60000)
+                .setConnectionRequestTimeout(60000)
+                .setSocketTimeout(60000)
                 .build();
 
 
