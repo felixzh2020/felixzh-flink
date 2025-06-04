@@ -21,6 +21,7 @@
         <module>FlinkNetty</module>
         <module>FlinkAkka</module>
         <module>ContainerKill</module>
+        <module>Kafka2ES</module>
     </modules>
 
 
