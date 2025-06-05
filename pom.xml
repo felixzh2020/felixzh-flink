@@ -22,6 +22,7 @@
         <module>FlinkAkka</module>
         <module>ContainerKill</module>
         <module>Kafka2ES</module>
+        <module>Kafka2HBase</module>
     </modules>
 
 
