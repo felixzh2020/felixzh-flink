@@ -26,12 +26,12 @@
             <artifactId>flink-core</artifactId>
             <version>${flink.version}</version>
         </dependency>
-        <dependency>
-            <!-- https://github.com/felixzh2020/bahir-flink/blob/master/flink-connector-akka/pom.xml -->
+        <!--<dependency>
+            &lt;!&ndash; https://github.com/felixzh2020/bahir-flink/blob/master/flink-connector-akka/pom.xml &ndash;&gt;
             <groupId>org.apache.bahir</groupId>
             <artifactId>flink-connector-akka_${scala.binary.version}</artifactId>
             <version>${flink.connector.akka.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-streaming-java</artifactId>
@@ -83,7 +83,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>NCFlinkUDFIdea</mainClass>
+                                    <mainClass>NCFlinkDataStreamAPIUDF</mainClass>
                                 </transformer>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
