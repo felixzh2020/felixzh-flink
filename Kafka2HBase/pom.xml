@@ -177,7 +177,7 @@
                             <transformers>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>Kafka2HBase</mainClass>
+                                    <mainClass>Kafka2HBaseV2</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

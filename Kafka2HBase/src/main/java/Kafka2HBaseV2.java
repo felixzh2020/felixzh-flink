@@ -12,17 +12,15 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
-public class Kafka2HBase {
+public class Kafka2HBaseV2 {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Kafka2HBase.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Kafka2HBaseV2.class);
 
     public static void main(String[] args) throws Exception {
         if (args.length != 1) {
-            System.out.println("Usage: flink run -t yarn-per-job -d /path/to/jar /path/to/Kafka2HBase.properties");
+            System.out.println("Usage: flink run -t yarn-per-job -d /path/to/jar /path/to/Kafka2HBaseV2.properties");
             System.exit(0);
         }
 
@@ -45,8 +43,8 @@ public class Kafka2HBase {
                 .build();
 
 
-        HBaseSinkFunction<HBaseData> hbaseSinkFunction = new HBaseSinkFunction<>(parameterTool);
-        DataStream<String> sourceStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "Kafka Source")
+        HBaseSinkFunctionV2<HBaseData> hbaseSinkFunction = new HBaseSinkFunctionV2<>(parameterTool);
+        DataStream<String> sourceStream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "KafkaSource")
                 .setParallelism(parameterTool.getInt("source.parallelism", 1));
 
         DataStream<HBaseData> mapDataStream = sourceStream.map((MapFunction<String, HBaseData>) value -> {
@@ -60,6 +58,6 @@ public class Kafka2HBase {
         }).setParallelism(parameterTool.getInt("source.parallelism", 1));
 
         mapDataStream.addSink(hbaseSinkFunction).setParallelism(parameterTool.getInt("sink.parallelism", 1));
-        env.execute("Kafka2HBase");
+        env.execute("Kafka2HBaseV2");
     }
 }

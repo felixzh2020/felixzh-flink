@@ -23,8 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-public class HBaseSinkFunction<T> extends RichSinkFunction<T>
-        implements CheckpointedFunction, BufferedMutator.ExceptionListener {
+public class HBaseSinkFunction<T> extends RichSinkFunction<T> implements CheckpointedFunction, BufferedMutator.ExceptionListener {
     private final Logger LOG = LoggerFactory.getLogger(HBaseSinkFunction.class);
 
     private static final long serialVersionUID = 1L;
@@ -42,7 +41,7 @@ public class HBaseSinkFunction<T> extends RichSinkFunction<T>
      * org.apache.flink.streaming.api.datastream.DataStream.addSink(DataStream.java:1244)
      * Kafka2HBase.main(Kafka2HBase.java:57)
      */
-    private ParameterTool parameterTool;
+    private final ParameterTool parameterTool;
     private final long bufferFlushMaxSizeInBytes;
     private final long bufferFlushMaxMutations;
     private final long bufferFlushIntervalMillis;
@@ -82,8 +81,7 @@ public class HBaseSinkFunction<T> extends RichSinkFunction<T>
                 this.connection = ConnectionFactory.createConnection(getHBaseClientConfiguration(parameterTool));
             }
             // create a parameter instance, set the table name and custom listener reference.
-            BufferedMutatorParams params =
-                    new BufferedMutatorParams(TableName.valueOf(tableName)).listener(this);
+            BufferedMutatorParams params = new BufferedMutatorParams(TableName.valueOf(tableName)).listener(this);
             if (bufferFlushMaxSizeInBytes > 0) {
                 // 达到数据总量flush
                 params.writeBufferSize(bufferFlushMaxSizeInBytes);
@@ -92,26 +90,19 @@ public class HBaseSinkFunction<T> extends RichSinkFunction<T>
 
             // 定时flush
             if (bufferFlushIntervalMillis > 0 && bufferFlushMaxMutations != 1) {
-                this.executor =
-                        Executors.newScheduledThreadPool(
-                                1, new ExecutorThreadFactory("hbase-upsert-sink-flusher"));
-                this.scheduledFuture =
-                        this.executor.scheduleWithFixedDelay(
-                                () -> {
-                                    if (closed) {
-                                        return;
-                                    }
-                                    try {
-                                        flush();
-                                    } catch (Exception e) {
-                                        // fail the sink and skip the rest of the items
-                                        // if the failure handler decides to throw an exception
-                                        failureThrowable.compareAndSet(null, e);
-                                    }
-                                },
-                                bufferFlushIntervalMillis,
-                                bufferFlushIntervalMillis,
-                                TimeUnit.MILLISECONDS);
+                this.executor = Executors.newScheduledThreadPool(1, new ExecutorThreadFactory("hbase-upsert-sink-flusher"));
+                this.scheduledFuture = this.executor.scheduleWithFixedDelay(() -> {
+                    if (closed) {
+                        return;
+                    }
+                    try {
+                        flush();
+                    } catch (Exception e) {
+                        // fail the sink and skip the rest of the items
+                        // if the failure handler decides to throw an exception
+                        failureThrowable.compareAndSet(null, e);
+                    }
+                }, bufferFlushIntervalMillis, bufferFlushIntervalMillis, TimeUnit.MILLISECONDS);
             }
         } catch (TableNotFoundException tnfe) {
             LOG.error("The table " + tableName + " not found ", tnfe);
@@ -127,12 +118,10 @@ public class HBaseSinkFunction<T> extends RichSinkFunction<T>
     public void invoke(T value, Context context) throws Exception {
         checkErrorAndRethrow();
         HBaseData hbaseData = (HBaseData) value;
-        mutator.mutate(new Put(hbaseData.getRowKey())
-                .addColumn(hbaseData.getColumnFamily(), hbaseData.getCfQualifier(), hbaseData.getData()));
+        mutator.mutate(new Put(hbaseData.getRowKey()).addColumn(hbaseData.getColumnFamily(), hbaseData.getCfQualifier(), hbaseData.getData()));
 
         // 达到数据行数flush
-        if (bufferFlushMaxMutations > 0
-                && numPendingRequests.incrementAndGet() >= bufferFlushMaxMutations) {
+        if (bufferFlushMaxMutations > 0 && numPendingRequests.incrementAndGet() >= bufferFlushMaxMutations) {
             flush();
         }
     }
@@ -180,8 +169,7 @@ public class HBaseSinkFunction<T> extends RichSinkFunction<T>
     }
 
     @Override
-    public void onException(RetriesExhaustedWithDetailsException e, BufferedMutator bufferedMutator)
-            throws RetriesExhaustedWithDetailsException {
+    public void onException(RetriesExhaustedWithDetailsException e, BufferedMutator bufferedMutator) throws RetriesExhaustedWithDetailsException {
         // fail the sink and skip the rest of the items
         // if the failure handler decides to throw an exception
         failureThrowable.compareAndSet(null, e);
@@ -210,15 +198,11 @@ public class HBaseSinkFunction<T> extends RichSinkFunction<T>
         final String HBASE_CLIENT_PREFIX = "sink.properties.";
 
         if (hbaseClientProperties.keySet().stream().anyMatch(key -> key.startsWith(HBASE_CLIENT_PREFIX))) {
-            hbaseClientProperties.keySet().stream()
-                    .filter(key -> key.startsWith(HBASE_CLIENT_PREFIX))
-                    .forEach(
-                            key -> {
-                                final String subKey = key.substring(HBASE_CLIENT_PREFIX.length());
-                                final String value = hbaseClientProperties.get(key);
-                                hbaseClientConf.set(subKey, value);
-                            }
-                    );
+            hbaseClientProperties.keySet().stream().filter(key -> key.startsWith(HBASE_CLIENT_PREFIX)).forEach(key -> {
+                final String subKey = key.substring(HBASE_CLIENT_PREFIX.length());
+                final String value = hbaseClientProperties.get(key);
+                hbaseClientConf.set(subKey, value);
+            });
         }
         hbaseClientConf.forEach(entry -> LOG.info("====" + entry.toString()));
         return hbaseClientConf;
