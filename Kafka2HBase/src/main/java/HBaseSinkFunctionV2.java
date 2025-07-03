@@ -68,6 +68,9 @@ public class HBaseSinkFunctionV2<T> extends RichSinkFunction<T> implements Check
         }
         connection = ConnectionFactory.createConnection(configuration);
         mutator = connection.getBufferedMutator(bufferedMutatorParams);
+
+        //定时flush也可以通过该方法设置，等效
+        //mutator.setWriteBufferPeriodicFlush(writeBufferPeriodicFlushTimeoutMs);
     }
 
     @Override
