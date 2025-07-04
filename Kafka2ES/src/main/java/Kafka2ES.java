@@ -13,6 +13,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
 import org.apache.http.HttpHost;
+import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Requests;
 
@@ -39,7 +40,8 @@ public class Kafka2ES {
                 .setBootstrapServers(parameterTool.get("source.brokers"))
                 .setTopics(parameterTool.get("source.topic"))
                 .setGroupId(parameterTool.get("source.groupId"))
-                .setStartingOffsets(OffsetsInitializer.latest())
+                //Start from committed offset, also use EARLIEST as reset strategy if committed offset doesn't exist
+                .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.LATEST))
                 .setValueOnlyDeserializer(new SimpleStringSchema())
                 .build();
 

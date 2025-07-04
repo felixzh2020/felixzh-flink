@@ -9,6 +9,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +37,8 @@ public class Kafka2HBaseV2 {
                 .setBootstrapServers(parameterTool.get("source.brokers"))
                 .setTopics(parameterTool.get("source.topic"))
                 .setGroupId(parameterTool.get("source.groupId"))
-                .setStartingOffsets(OffsetsInitializer.latest())
+                //Start from committed offset, also use EARLIEST as reset strategy if committed offset doesn't exist
+                .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.LATEST))
                 .setValueOnlyDeserializer(new SimpleStringSchema())
                 .setProperty(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true")
                 .setStartingOffsets(OffsetsInitializer.latest())

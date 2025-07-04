@@ -11,6 +11,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
+import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.apache.kafka.clients.producer.ProducerConfig;
 
 public class Kafka2Kafka {
@@ -29,7 +30,8 @@ public class Kafka2Kafka {
                 .setBootstrapServers(parameterTool.get("source.brokers"))
                 .setTopics(parameterTool.get("source.topic"))
                 .setGroupId(parameterTool.get("source.groupId"))
-                .setStartingOffsets(OffsetsInitializer.latest())
+                //Start from committed offset, also use EARLIEST as reset strategy if committed offset doesn't exist
+                .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.LATEST))
                 .setValueOnlyDeserializer(new SimpleStringSchema())
                 .build();
 
