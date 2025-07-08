@@ -60,6 +60,6 @@ public class Kafka2HBaseV3 {
         }).setParallelism(parameterTool.getInt("source.parallelism", 1));
 
         mapDataStream.addSink(hbaseSinkFunction).setParallelism(parameterTool.getInt("sink.parallelism", 1));
-        env.execute("Kafka2HBaseV2");
+        env.execute("Kafka2HBaseV3");
     }
 }
