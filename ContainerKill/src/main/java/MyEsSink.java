@@ -18,6 +18,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+/**
+ * @author felixzh
+ * 不推荐直接使用ES BulkRequest，建议使用官方Elasticsearch Connector或者使用ES BulkProcessor
+ * */
 public class MyEsSink<T> extends RichSinkFunction<List<T>> implements CheckpointedFunction {
 
     private final Logger LOG = LoggerFactory.getLogger(MyEsSink.class);

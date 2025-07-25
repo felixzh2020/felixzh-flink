@@ -24,6 +24,7 @@
         <module>Kafka2ES</module>
         <module>Kafka2HBase</module>
         <module>CustomSource</module>
+        <module>DataGen2ES</module>
     </modules>
 
 
