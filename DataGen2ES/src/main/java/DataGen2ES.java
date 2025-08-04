@@ -31,6 +31,15 @@ import java.util.Map;
  * <p>
  * 而yarn.classpath.include-user-jar则决定YARN模式下用户Jar如何添加到task manager进程的classpath！
  * 为了避免全局classpath污染，推荐优先使用child-first + DISABLED 组合。
+ * <p>
+ * When deploying Flink with PerJob/Application Mode on Yarn, the JAR file specified in startup command and all JAR files
+ * in Flink’s usrlib folder will be recognized as user-jars. By default Flink will include the user-jars into the system classpath.
+ * This behavior can be controlled with the yarn.classpath.include-user-jar parameter.
+ * When setting this to DISABLED Flink will include the jar in the user classpath instead.
+ * The user-jars position in the classpath can be controlled by setting the parameter to one of the following:
+ * ORDER: (default) Adds the jar to the system classpath based on the lexicographic order.
+ * FIRST: Adds the jar to the beginning of the system classpath.
+ * LAST: Adds the jar to the end of the system classpath.
  */
 public class DataGen2ES {
     public static void main(String... args) throws Exception {
