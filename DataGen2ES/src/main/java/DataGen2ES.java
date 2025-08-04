@@ -20,12 +20,24 @@ import java.util.Map;
 
 /**
  * @author felixzh
+ * <p>
+ * 在Java中，类加载器通常遵循双亲委派模型，即子类加载器在加载类前先委托父类加载器。
+ * 但是，在Flink中，当用户依赖Jar与Flink依赖Jar有冲突时候，可以通过classloader.resolve-order调整类加载器顺序。
+ * child-first表示优先从用户依赖Jar加载，也就是打破了Java双亲委派模型的累加器方式。
+ * 如果在 Flink 中将 classloader.resolve-order 设置为 parent-firt，
+ * 则 Flink AppClassLoader 将优先于 FlinkUserCodeClassLoader 进行类加载。
+ * 也就是说，当用户自定义代码中存在与系统级别库相同的类时，Flink AppClassLoader 将优先加载系统级别库中的类，而不是用户自定义代码中的类。
+ * 这种加载机制与传统的 Java 应用程序的类加载机制是相同的，即优先从父 ClassLoader 中加载类，如果父 ClassLoader 中不存在该类，则委托给子 ClassLoader 进行加载。
+ * <p>
+ * 而yarn.classpath.include-user-jar则决定YARN模式下用户Jar如何添加到task manager进程的classpath！
+ * 为了避免全局classpath污染，推荐优先使用child-first + DISABLED 组合。
  */
 public class DataGen2ES {
     public static void main(String... args) throws Exception {
         if (args.length != 1) {
             System.out.println("Usage: flink run -t yarn-per-job /path/to/DataGen2ES-1.0.jar /path/to/DataGen2ES.properties");
             System.out.println("Usage: flink run-application -t yarn-application -Dclassloader.resolve-order=parent-first /path/to/DataGen2ES-1.0.jar /path/to/DataGen2ES.properties");
+            System.out.println("Usage: flink run-application -t yarn-application -Dyarn.classpath.include-user-jar=DISABLED /path/to/DataGen2ES-1.0.jar /path/to/DataGen2ES.properties");
             System.exit(0);
         }
 
