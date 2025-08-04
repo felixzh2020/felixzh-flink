@@ -40,6 +40,9 @@ import java.util.Map;
  * ORDER: (default) Adds the jar to the system classpath based on the lexicographic order.
  * FIRST: Adds the jar to the beginning of the system classpath.
  * LAST: Adds the jar to the end of the system classpath.
+ * <p>
+ * when setting the yarn.classpath.include-user-jar to DISABLED, Flink will include the user jars in the user classpath
+ * and load them dynamically by FlinkUserCodeClassLoader.
  */
 public class DataGen2ES {
     public static void main(String... args) throws Exception {
