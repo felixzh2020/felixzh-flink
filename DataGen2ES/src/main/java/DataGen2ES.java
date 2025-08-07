@@ -48,8 +48,8 @@ public class DataGen2ES {
     public static void main(String... args) throws Exception {
         if (args.length != 1) {
             System.out.println("Usage: flink run -t yarn-per-job /path/to/DataGen2ES-1.0.jar /path/to/DataGen2ES.properties");
-            System.out.println("Usage: flink run-application -t yarn-application -Dclassloader.resolve-order=parent-first /path/to/DataGen2ES-1.0.jar /path/to/DataGen2ES.properties");
-            System.out.println("Usage: flink run-application -t yarn-application -Dyarn.classpath.include-user-jar=DISABLED /path/to/DataGen2ES-1.0.jar /path/to/DataGen2ES.properties");
+            System.out.println("Usage: flink run-application -t yarn-application  -Dyarn.ship-files=FlinkJob_DataGen2ES.properties -Dclassloader.resolve-order=parent-first /path/to/DataGen2ES-1.0.jar /path/to/DataGen2ES.properties");
+            System.out.println("Usage: flink run-application -t yarn-application  -Dyarn.ship-files=FlinkJob_DataGen2ES.properties -Dyarn.classpath.include-user-jar=DISABLED /path/to/DataGen2ES-1.0.jar /path/to/DataGen2ES.properties");
             System.exit(0);
         }
 
