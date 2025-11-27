@@ -89,6 +89,7 @@ public class DataGen2ES {
                 .setConnectionTimeout(60000)
                 .setConnectionRequestTimeout(60000)
                 .setSocketTimeout(60000)
+                //.setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
                 .build();
 
         DataStream<String> stream = env.fromSource(source, WatermarkStrategy.noWatermarks(), "FelixZhDataGen")
